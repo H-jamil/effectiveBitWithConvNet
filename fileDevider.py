@@ -1,4 +1,4 @@
-
+import os
 def fileDevider(filename):
     rulePerFile=10
     fop=open(filename,'r')
@@ -15,5 +15,7 @@ def fileDevider(filename):
             fwrite.write(str(k))
         fwrite.close()
         start+=step
-
-fileDevider('acl1_1k')
+cwd=os.getcwd()
+fileDevider('acl1_100k')
+list1 = os.listdir(cwd)
+print(list1)

@@ -18,13 +18,10 @@ wRatio=0.1
 #cFactor=[0.9,0.9,0.9,0.9,0.9,0.8,0.8,0.8,0.8,0.9,0.9,0.9,0.5,0.8,0.8]
 cFactor=[0.9,0.9,0.8,0.8,0.9]
 # cbFileName=['acl_15','acl1_15','acl2_15','acl3_15']
-# cwd=os.getcwd()
-# cbFileName=os.listdir(cwd)
-# cbFileName=cbFileName[:-1]
-# cbFileName=['acl1_1k_0', 'acl1_1k_1', 'acl1_1k_2', 'acl1_1k_3', 'acl1_1k_4', 'acl1_1k_5','acl1_1k_wildcards']
-# cbFileName=['acl1_1k']
-cbFileName=['acl1_500']
-
+cwd=os.getcwd()
+cbFileName=os.listdir(cwd)
+cbFileName=cbFileName[:-1]
+# cbFileName=['acl1_1k_0', 'acl1_1k_1', 'acl1_1k_2', 'acl1_1k_3', 'acl1_1k_4', 'acl1_1k_5']
 # cbFileName=['acl1_1k']
 # dcRatioMulti=[[0.10,0.10,0.10,0.10,0.10,0.50,0.50,0.50,0.50,1,1,1,0.50,1,1]]
 samplePos=[]
@@ -135,6 +132,25 @@ def createRuleList(allfieldsRule):
         ruleList.append(rule)
 
     return ruleList
+
+# def createAllfieldstable(allfieldsRule):
+#     """
+#     Take a list of binary all rule files and output a list of [[field1,field2,field3, ...field5]] format
+#     """
+#     allfieldsTable=[]
+#     for i in range(len(allfieldsRule)):
+#         allfieldsTable.append(allfieldsRule[i].split(' '))
+#     return allfieldsTable
+#
+# def createConcatenatedRule(allfieldsRule):
+#     """
+#     Take a list of binary all rule files and output a list of [[field1field2field3...field5]] format
+#
+#     """
+#     concatenatedRule=[]
+#     for i in range(len(allfieldsRule)):
+#         concatenatedRule.append(allfieldsRule[i].replace(' ',''))
+#     return concatenatedRule
 
 def checkBitChr(allfieldsTable,fieldBitSize):
     #allfieldsTable[rule][field][bit]
@@ -698,13 +714,13 @@ def verificationOfRuleset(cb5tupleTable,samplePos,printcommand):
             print('withWildcard ')
             for k in ruleSubsetFromEffectiveBit:
                 print(k,':',ruleSubsetFromEffectiveBit[k],len(ruleSubsetFromEffectiveBit[k]))
-            print("_______________________")
+                print("_______________________")
 
     elif printcommand=='withOutWildCard':
             print('withOutWildcard ')
             for k in ruleSubsetFromEffectiveBit:
                 print(k,':',ruleSubsetFromEffectiveBit[k],len(ruleSubsetFromEffectiveBit[k]))
-            print("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
+                print("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
 
     ruleNumbersToverifyDuplicate=ruleNumbersToverify[:]
     for ruleNo in ruleNumbersToverify:
@@ -716,43 +732,17 @@ def verificationOfRuleset(cb5tupleTable,samplePos,printcommand):
 
     print('Total rules after Checking= ', ruleNumbersToverifyDuplicate)
     if len(ruleNumbersToverifyDuplicate)==0:
-        print('#######Verified+Good#########')
+        print('#######Verified+GoodShot#########')
     else:
-        print('*********Fishy*********')
+        print('*********FishyChoices*********')
 
-def findingSamplePosition(fileLoc,cb5tupleTable,fieldBitSize):
-    # allfieldsTable=[]
-    # concatenatedRule=[]
-    rulesetNum=len(cb5tupleTable)
-    allfieldsRule=createRuleList(cb5tupleTable)
-    allfieldsTable=cb5tupleTable[:]
-    concatenatedRule=allfieldsRule[:]
-    bitCharTable=checkBitChr(allfieldsTable,fieldBitSize)
-    fieldWC=getFieldWC(bitCharTable) #fieldWC[field]
-    pos4SMatrix=pickPos4SMatrix(bitCharTable) #pos4SMatrix[field]
-    similarityMatrix=getSimilarityMatrix(pos4SMatrix,allfieldsTable,fieldBitSize) #similarityMatrix[field][bit]
-    for indexSize in range(0,1):
-        print(fileLoc,rulesetNum, indexSize)
-        bitPosCandidateList=getBitPosCandidateList(fieldWC,fieldBitSize,bitCharTable,similarityMatrix,cFactor)
-        print('candidate= ',bitPosCandidateList,len(bitPosCandidateList),len(bitPosCandidateList[0]))
-        fieldWCDiff=createFWCDiff(fieldWC)
-        fieldReplaceList=createFieldReplaceList(fieldWCDiff,bitPosCandidateList,bitspaceSize)
-        samplePositionCalculated=sorted(createSamplePos(bitPosCandidateList,fieldReplaceList,bitspaceSize,fieldPosition))
-        samplePos=[]
-        #samplePos.append(oldSmaplePos)
-        samplePos.append(samplePositionCalculated)
-        print('samplePositions= ', samplePos)
-    return samplePos
 
-# tSubsetLookup=[]
-fwrite=open('Rules'+'_'+'effectiveBits_test','w')
+tSubsetLookup=[]
+fwrite=open('Rules'+'_'+'effectiveBits','w')
 for i in range(len(cbFileName)):
     fileLoc=cbFileName[i]
-    # print(fileLoc)
+    print(fileLoc)
     # fileLoc='acl3_1K'
-    # allfieldsTable=[]
-    # concatenatedRule=[]
-    print('withWildcard')
     cb5tupleTable=loadClassBenchRuleFile(fileLoc,fieldBitSize)
     rulesetNum=len(cb5tupleTable)
     allfieldsRule=createRuleList(cb5tupleTable)
@@ -763,7 +753,7 @@ for i in range(len(cbFileName)):
     pos4SMatrix=pickPos4SMatrix(bitCharTable) #pos4SMatrix[field]
     similarityMatrix=getSimilarityMatrix(pos4SMatrix,allfieldsTable,fieldBitSize) #similarityMatrix[field][bit]
     for indexSize in range(0,1):
-        print(fileLoc,rulesetNum, indexSize)
+        print(cbFileName[i],rulesetNum, indexSize)
         bitPosCandidateList=getBitPosCandidateList(fieldWC,fieldBitSize,bitCharTable,similarityMatrix,cFactor)
         print('candidate= ',bitPosCandidateList,len(bitPosCandidateList),len(bitPosCandidateList[0]))
         fieldWCDiff=createFWCDiff(fieldWC)
@@ -773,20 +763,15 @@ for i in range(len(cbFileName)):
         #samplePos.append(oldSmaplePos)
         samplePos.append(samplePositionCalculated)
         print('samplePositions= ', samplePos)
-    # samplePos=findingSamplePosition(fileLoc,cb5tupleTable,fieldBitSize)
-    finalRules=rulesWithoutWildCardBits(fileLoc,fieldBitSize)
-    print('withOutWildcard')
-    samplePos1=findingSamplePosition(fileLoc,finalRules,fieldBitSize)
     verificationOfRuleset(cb5tupleTable,samplePos,'withWildCard')
+    finalRules=rulesWithoutWildCardBits(fileLoc,fieldBitSize)
     verificationOfRuleset(finalRules,samplePos,'withOutWildCard')
-    verificationOfRuleset(finalRules,samplePos1,'withOutWildCard')
-    verificationOfRuleset(cb5tupleTable,samplePos1,'withWildCard')
-
     allfieldsRuleWithOutWildCard=createRuleList(finalRules)
-    # print(len(allfieldsRuleWithOutWildCard))
+    print(len(allfieldsRuleWithOutWildCard))
     # finalRules.append([])
+    # print(samplePos)
     allfieldsRuleWithOutWildCard.append(samplePos[0][0])
-    # print('ruleList',allfieldsRuleWithOutWildCard)
+    print('ruleList',allfieldsRuleWithOutWildCard)
     for k in allfieldsRuleWithOutWildCard:
         fwrite.write(str(k)+'\n')
 
